@@ -23,6 +23,8 @@ const initialProducts: Product[] = [
 
 //Inicializar products leyendo de localStorage
 function App() {
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   const [products, setProducts] = useState<Product[]>(() => {
   const stored = localStorage.getItem("stockflow_products");
   if (stored) {
@@ -125,27 +127,55 @@ useEffect(() => {
             <p style={styles.cardNumber}>${totalIngresos.toFixed(2)} MXN</p>
           </div>
         </section>
-        {/* Boton borrar */}
-        <section style={styles.section}>
-        <h2 style={styles.sectionTitle}>Administración</h2>
-        <button
+
+        
+       {/* Botón borrar + modal */}
+    <section style={styles.section}>
+      <h2 style={styles.sectionTitle}>Administración</h2>
+
+      <button
         style={styles.deleteButton}
-        onClick={() => {
-        const confirmDelete = window.confirm(
-        "¿Estás seguro de que deseas borrar todos los datos? Esta acción no se puede deshacer."
-        );
-        if (!confirmDelete) return;
-
-        localStorage.removeItem("stockflow_products");
-        localStorage.removeItem("stockflow_sales");
-
-        setProducts(initialProducts);
-        setSales([]);
-        }}
-        >
+        onClick={() => setShowDeleteModal(true)}
+      >
         Borrar todos los datos
-        </button>
-        </section>
+      </button>
+
+      {showDeleteModal && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modal}>
+            <h3>¿Eliminar todos los datos?</h3>
+            <p style={{ opacity: 0.8 }}>
+              Esta acción eliminará el inventario actualizado y todo el historial de ventas.
+              No se puede deshacer.
+            </p>
+
+            <div style={styles.modalButtons}>
+              <button
+                style={styles.cancelButton}
+                onClick={() => setShowDeleteModal(false)}
+              >
+                Cancelar
+              </button>
+
+              <button
+                style={styles.confirmDeleteButton}
+                onClick={() => {
+                  localStorage.removeItem("stockflow_products");
+                  localStorage.removeItem("stockflow_sales");
+
+                  setProducts(initialProducts);
+                  setSales([]);
+
+                  setShowDeleteModal(false);
+                }}
+              >
+                Borrar datos
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
 
 
         {/* Registrar venta */}
@@ -336,6 +366,55 @@ const styles: { [key: string]: React.CSSProperties } = {
   color: "#fff",
   marginTop: "0.5rem",
 },
+modalOverlay: {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  width: "100vw",
+  height: "100vh",
+  backgroundColor: "rgba(0, 0, 0, 0.6)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  zIndex: 9999,
+},
+
+modal: {
+  background: "#1e293b",
+  padding: "1.5rem",
+  borderRadius: "0.75rem",
+  width: "90%",
+  maxWidth: "420px",
+  boxShadow: "0 10px 25px rgba(0,0,0,0.4)",
+  animation: "fadeIn 0.2s ease-out",
+},
+
+modalButtons: {
+  display: "flex",
+  justifyContent: "flex-end",
+  gap: "1rem",
+  marginTop: "1.5rem",
+},
+
+cancelButton: {
+  background: "#475569",
+  color: "#fff",
+  padding: "0.6rem 1rem",
+  borderRadius: "0.5rem",
+  border: "none",
+  cursor: "pointer",
+},
+
+confirmDeleteButton: {
+  background: "linear-gradient(135deg, #ef4444, #dc2626)",
+  color: "#fff",
+  padding: "0.6rem 1rem",
+  borderRadius: "0.5rem",
+  border: "none",
+  cursor: "pointer",
+  fontWeight: 600,
+},
+
 
 };
 
