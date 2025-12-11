@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
 
 type Product = {
   id: number;
@@ -20,9 +21,41 @@ const initialProducts: Product[] = [
   { id: 3, name: "Cubrebocas caja 50 pzas", price: 200, stock: 30 },
 ];
 
+//Inicializar products leyendo de localStorage
 function App() {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [sales, setSales] = useState<Sale[]>([]);
+  const [products, setProducts] = useState<Product[]>(() => {
+  const stored = localStorage.getItem("stockflow_products");
+  if (stored) {
+    try {
+      return JSON.parse(stored) as Product[];
+    } catch {
+      return initialProducts;
+    }
+  }
+  return initialProducts;
+});
+//Inicializar sales leyendo de localStorage
+  const [sales, setSales] = useState<Sale[]>(() => {
+  const stored = localStorage.getItem("stockflow_sales");
+  if (stored) {
+    try {
+      return JSON.parse(stored) as Sale[];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+});
+//Guardar automáticamente cuando cambian products o sales
+useEffect(() => {
+  localStorage.setItem("stockflow_products", JSON.stringify(products));
+}, [products]);
+
+useEffect(() => {
+  localStorage.setItem("stockflow_sales", JSON.stringify(sales));
+}, [sales]);
+
+
   const [selectedProductId, setSelectedProductId] = useState<number>(1);
   const [quantity, setQuantity] = useState<number>(1);
 
