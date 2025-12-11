@@ -125,6 +125,28 @@ useEffect(() => {
             <p style={styles.cardNumber}>${totalIngresos.toFixed(2)} MXN</p>
           </div>
         </section>
+        {/* Boton borrar */}
+        <section style={styles.section}>
+        <h2 style={styles.sectionTitle}>Administración</h2>
+        <button
+        style={styles.deleteButton}
+        onClick={() => {
+        const confirmDelete = window.confirm(
+        "¿Estás seguro de que deseas borrar todos los datos? Esta acción no se puede deshacer."
+        );
+        if (!confirmDelete) return;
+
+        localStorage.removeItem("stockflow_products");
+        localStorage.removeItem("stockflow_sales");
+
+        setProducts(initialProducts);
+        setSales([]);
+        }}
+        >
+        Borrar todos los datos
+        </button>
+        </section>
+
 
         {/* Registrar venta */}
         <section style={styles.section}>
@@ -303,6 +325,18 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderBottom: "1px solid #111827",
     fontSize: "0.9rem",
   },
+
+  deleteButton: {
+  padding: "0.7rem 1rem",
+  borderRadius: "0.75rem",
+  border: "none",
+  cursor: "pointer",
+  fontWeight: 600,
+  background: "linear-gradient(135deg, #ef4444, #dc2626)",
+  color: "#fff",
+  marginTop: "0.5rem",
+},
+
 };
 
 export default App;
